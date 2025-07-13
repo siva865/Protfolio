@@ -1,104 +1,224 @@
 import React, { useState } from "react";
-import { Braces, Server, ChevronUp, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { Braces, Server, ChevronUp, ChevronDown, Code, Database, Cpu, Layout } from "lucide-react";
 
 function About() {
-  const [isFrontendOpen, setIsFrontendOpen] = useState(false);
-  const [isBackendOpen, setIsBackendOpen] = useState(false);
+  const [isFrontendOpen, setIsFrontendOpen] = useState(true);
+  const [isBackendOpen, setIsBackendOpen] = useState(true);
+  const [ref, inView] = useInView({
+    threshold: 0.1,
+    triggerOnce: true
+  });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        when: "beforeChildren"
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 10
+      }
+    }
+  };
+
+  const skillBarVariants = {
+    hidden: { width: 0 },
+    visible: (level) => ({
+      width: `${level}%`,
+      transition: {
+        duration: 1,
+        type: "spring",
+        damping: 10
+      }
+    })
+  };
+
+  const skills = {
+    frontend: [
+      { name: "HTML", level: 90, icon: <Layout size={16} /> },
+      { name: "CSS/Tailwind", level: 85, icon: <Layout size={16} /> },
+      { name: "JavaScript", level: 80, icon: <Code size={16} /> },
+      { name: "React", level: 85, icon: <Code size={16} /> }
+    ],
+    backend: [
+      { name: "Node.js", level: 80, icon: <Cpu size={16} /> },
+      { name: "Express.js", level: 75, icon: <Cpu size={16} /> },
+      { name: "MongoDB", level: 80, icon: <Database size={16} /> },
+      { name: "Firebase", level: 70, icon: <Database size={16} /> }
+    ]
+  };
 
   return (
-    <div className="text-center mt-10 flex flex-col items-center  scroll-smooth" id="about">
+    <motion.div 
+      className="text-center py-20 px-4 md:px-8 flex flex-col items-center scroll-smooth bg-white"
+      id="about"
+      ref={ref}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      variants={containerVariants}
+    >
       {/* About Me Section */}
-      <h1 className="text-black font-bold text-4xl">About Me</h1>
-      <p className="text-[#6D6A7C]text-[#6D6A7C]">My introduction</p>
+      <motion.div variants={itemVariants} className="max-w-4xl w-full">
+        <motion.h1 
+          className="text-4xl md:text-5xl font-bold text-[#242329] mb-4"
+          variants={itemVariants}
+        >
+          About <span className="bg-gradient-to-r from-[#5A43CB] to-[#8B7AE7] bg-clip-text text-transparent">Me</span>
+        </motion.h1>
+        
+        <motion.p 
+          className="text-[#6D6A7C] text-lg md:text-xl mb-8"
+          variants={itemVariants}
+        >
+          My introduction
+        </motion.p>
 
-      <div className="mt-6 text-[#6D6A7C] max-w-lg">
-        <p>
-          Passionate and self-driven Full Stack Developer with a growing skillset in building modern, 
-          responsive, and user-friendly web applications. I specialize in working with the MERN stack—MongoDB, 
-          Express.js, React, and Node.js—to create efficient and scalable solutions for real-world problems.
-        </p>
-      </div>
+        <motion.div 
+          className="text-[#6D6A7C] text-lg max-w-3xl mx-auto mb-16 leading-relaxed"
+          variants={itemVariants}
+        >
+          <p>
+            Passionate and self-driven Full Stack Developer with expertise in building modern, 
+            responsive, and user-friendly web applications. I specialize in the MERN stack 
+            (MongoDB, Express.js, React, and Node.js) to create efficient and scalable solutions.
+          </p>
+        </motion.div>
 
-      <div className="mt-20 w-[90%] max-w-3xl flex justify-between">
-    
-        <div className="w-[48%]">
-          <div 
-            className="flex justify-between items-center cursor-pointer"
-            onClick={() => setIsFrontendOpen(!isFrontendOpen)}
+        {/* Skills Section */}
+        <motion.div 
+          className="w-full flex flex-col md:flex-row gap-8 justify-between"
+          variants={containerVariants}
+        >
+          {/* Frontend Skills */}
+          <motion.div 
+            className="w-full md:w-[48%] bg-[#f9f9ff] rounded-xl p-6 shadow-sm"
+            variants={itemVariants}
+            whileHover={{ y: -5 }}
           >
-            <div className="flex items-center gap-2">
-              <Braces size={28} color="#4A32B8" />
-              <h2 className="text-black font-bold text-lg">Frontend Developer</h2>
-            </div>
-            {isFrontendOpen ? <ChevronUp size={20} color="#4A32B8" /> : <ChevronDown size={20} color="#4A32B8" />}
-          </div>
-   
-
-          {isFrontendOpen && (
-            <div className="mt-4">
-              {[
-                { name: "HTML", level: 90 },
-                { name: "CSS", level: 80 },
-                { name: "JavaScript", level: 70 },
-                { name: "React", level: 80 },
-              ].map((skill, index) => (
-                <div key={index} className="mb-3">
-                  <div className="flex justify-between text-sm font-semibold">
-                    <span>{skill.name}</span>
-                    <span>{skill.level}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                    <div
-                      className="bg-[#4A32B8] h-2 rounded-full"
-                      style={{ width: `${skill.level}%` }}
-                    ></div>
-                  </div>
+            <div 
+              className="flex justify-between items-center cursor-pointer mb-4"
+              onClick={() => setIsFrontendOpen(!isFrontendOpen)}
+            >
+              <div className="flex items-center gap-3">
+                <div className="bg-[#5A43CB]/10 p-2 rounded-lg">
+                  <Braces size={24} className="text-[#5A43CB]" />
                 </div>
-              ))}
+                <h2 className="text-black font-bold text-xl">Frontend</h2>
+              </div>
+              {isFrontendOpen ? 
+                <ChevronUp size={20} className="text-[#5A43CB]" /> : 
+                <ChevronDown size={20} className="text-[#5A43CB]" />
+              }
             </div>
-          )}
-        </div>
 
-        {/* Backend Skills */}
-        <div className="w-[48%]">
-          <div 
-            className="flex justify-between items-center cursor-pointer"
-            onClick={() => setIsBackendOpen(!isBackendOpen)}
+            <AnimatePresence>
+              {isFrontendOpen && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  variants={containerVariants}
+                >
+                  {skills.frontend.map((skill, index) => (
+                    <motion.div 
+                      key={index} 
+                      className="mb-4"
+                      variants={itemVariants}
+                    >
+                      <div className="flex justify-between items-center text-sm font-medium mb-1">
+                        <div className="flex items-center gap-2">
+                          {skill.icon}
+                          <span>{skill.name}</span>
+                        </div>
+                        <span>{skill.level}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <motion.div
+                          className="bg-gradient-to-r from-[#5A43CB] to-[#8B7AE7] h-2 rounded-full"
+                          variants={skillBarVariants}
+                          custom={skill.level}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Backend Skills */}
+          <motion.div 
+            className="w-full md:w-[48%] bg-[#f9f9ff] rounded-xl p-6 shadow-sm"
+            variants={itemVariants}
+            whileHover={{ y: -5 }}
           >
-            <div className="flex items-center gap-2">
-              <Server size={28} color="#4A32B8" />
-              <h2 className="text-black font-bold text-lg">Backend Developer</h2>
-            </div>
-            {isBackendOpen ? <ChevronUp size={20} color="#4A32B8" /> : <ChevronDown size={20} color="#4A32B8" />}
-          </div>
-          
-
-          {isBackendOpen && (
-            <div className="mt-4">
-              {[
-                { name: "Node.js", level: 75 },
-                { name: "Express.js", level: 70 },
-                { name: "MongoDB", level: 80 },
-                { name: "Firebase", level: 65 },
-              ].map((skill, index) => (
-                <div key={index} className="mb-3">
-                  <div className="flex justify-between text-sm font-semibold">
-                    <span>{skill.name}</span>
-                    <span>{skill.level}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                    <div
-                      className="bg-[#4A32B8] h-2 rounded-full"
-                      style={{ width: `${skill.level}%` }}
-                    ></div>
-                  </div>
+            <div 
+              className="flex justify-between items-center cursor-pointer mb-4"
+              onClick={() => setIsBackendOpen(!isBackendOpen)}
+            >
+              <div className="flex items-center gap-3">
+                <div className="bg-[#5A43CB]/10 p-2 rounded-lg">
+                  <Server size={24} className="text-[#5A43CB]" />
                 </div>
-              ))}
+                <h2 className="text-black font-bold text-xl">Backend</h2>
+              </div>
+              {isBackendOpen ? 
+                <ChevronUp size={20} className="text-[#5A43CB]" /> : 
+                <ChevronDown size={20} className="text-[#5A43CB]" />
+              }
             </div>
-          )}
-        </div>
-      </div>
-    </div>
+
+            <AnimatePresence>
+              {isBackendOpen && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  variants={containerVariants}
+                >
+                  {skills.backend.map((skill, index) => (
+                    <motion.div 
+                      key={index} 
+                      className="mb-4"
+                      variants={itemVariants}
+                    >
+                      <div className="flex justify-between items-center text-sm font-medium mb-1">
+                        <div className="flex items-center gap-2">
+                          {skill.icon}
+                          <span>{skill.name}</span>
+                        </div>
+                        <span>{skill.level}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <motion.div
+                          className="bg-gradient-to-r from-[#5A43CB] to-[#8B7AE7] h-2 rounded-full"
+                          variants={skillBarVariants}
+                          custom={skill.level}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }
 
