@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaWhatsapp, FaGithub, FaBars, FaTimes } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa6";
 import { PiTelegramLogo } from "react-icons/pi";
-import One from "../assets/Photos/Hero.jpeg";
+import One from "../assets/Photos/Hero.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
